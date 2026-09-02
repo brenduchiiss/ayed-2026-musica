@@ -4,8 +4,10 @@ Repositorio del grupo. Partir de este esqueleto. No borrar la estructura de `src
 
 ## Integrantes
 
+| Nombre | Mail | GitHub |
+| :--- | :--- | :--- |
 | Brenda Correa | brendamcorrea.25@gmail.com | brenduchiiss |
-| Valentina Skrobacki | valentinaskrobacki@gmail.com |  |
+| Valentina Skrobacki | valentinaskrobacki@gmail.com | usuariodevalen |
 
 **Tema elegido:** Biblioteca musical
 
