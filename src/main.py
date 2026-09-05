@@ -1,4 +1,5 @@
 from src.config import TEMA
+from src.dominio.catalogo import obtener_catalogo
 
 TEMAS = {
     "pokedex": "Pokédex",
@@ -10,6 +11,16 @@ TEMAS = {
 def pendiente():
     print("Todavía no está implementado. Completar en la entrega que corresponde.")
 
+def listar_catalogo():
+    catalogo = obtener_catalogo()
+    print("\n--- CATÁLOGO DE CANCIONES ---")
+    if not catalogo:
+        print("El catálogo está vacío.")
+        return
+
+    for cancion in catalogo:
+        print(cancion)
+    print("-" * 50)
 
 def mostrar_menu():
     nombre = TEMAS.get(TEMA, TEMA or "(sin tema)")
@@ -38,7 +49,11 @@ def main():
         opcion = input("> ").strip()
         if opcion == "0":
             print("Chau.")
-        elif opcion in {"1", "2", "3", "4", "5", "6", "7", "8", "9"}:
+        elif opcion == "1":
+            # para la entrega 1: ejecutamos la func que muestra el catalogo cargado a mano
+            listar_catalogo()
+        elif opcion in {"2", "3", "4", "5", "6", "7", "8", "9"}:
+            # las opciones de la 2 a la 9 quedan pendientes para las sig entregas del cuatri
             pendiente()
         else:
             print("Opción inválida.")
