@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .venv/
 venv/
 __pycache__/
@@ -9,3 +10,16 @@ Thumbs.db
 *.bin
 *.dat
 .env
+=======
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.idea/
+.vscode/
+*.bin
+*.dat
+.DS_Store
+Thumbs.db
+>>>>>>> a7d190326d6e4d96db35e2cd86adbf95cacc0da1
