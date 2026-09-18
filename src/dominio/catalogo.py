@@ -28,3 +28,22 @@ _CATALOGO_INICIAL = [
 def obtener_catalogo() -> list:
     """retorna la lista de canciones que forman el catalogo inicial."""
     return _CATALOGO_INICIAL
+
+# Diccionario de versiones para la recursión (ID original -> lista de versiones)
+RELACIONES_VERSIONES = {
+    "1": ["2", "3"],
+    "2": ["4"],
+    "3": [],
+    "4": []
+}
+
+def versiones_de(relaciones, id_cancion):
+    directas = relaciones.get(id_cancion, [])
+    # CASO BASE: si no tiene derivadas, devuelve lista vacía
+    if not directas:
+        return []
+    # CASO RECURSIVO: busca las versiones de las versiones
+    resultado = list(directas)
+    for v in directas:
+        resultado += versiones_de(relaciones, v)
+    return resultado
