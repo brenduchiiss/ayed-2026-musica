@@ -30,10 +30,18 @@ Estructura del modelo:
 
 ## 3. Recursión (E2)
 
-- Función:
-- Caso base:
-- Caso recursivo:
-- Traza de un ejemplo real del dataset:
+* **Función:** `versiones_de(relaciones, id_cancion)`
+* **Caso base:** Si la canción no tiene versiones derivadas registradas en el diccionario `RELACIONES_VERSIONES`, la función retorna una lista vacía `[]`.
+* **Caso recursivo:** Concatena las versiones directas con el resultado de llamar a `versiones_de()` para cada una de esas versiones.
+* **Traza de un ejemplo real del dataset:**
+  Para la Canción ID "1":
+  * Llamada 1: `versiones_de("1")` -> tiene derivadas ["2", "3"]
+    * Llamada 2: `versiones_de("2")` -> tiene derivada ["4"]
+      * Llamada 3: `versiones_de("4")` -> caso base -> devuelve `[]`
+      * Retorna `["4"]`
+    * Llamada 4: `versiones_de("3")` -> caso base -> devuelve `[]`
+    * Retorna `["3"]`
+  * Resultado final: `["2", "3", "4"]`
 
 ## 4. TADs (E3)
 
@@ -68,17 +76,3 @@ Mediciones (`time.perf_counter`):
 | Integrante | Qué hizo | Qué puede defender |
 | --- | --- | --- |
 |  |  |  |
-
-## Recursión (E2)
-
-* **Caso base:** Si la canción no tiene versiones derivadas registradas en el diccionario `RELACIONES_VERSIONES`, la función retorna una lista vacía `[]`.
-* **Caso recursivo:** Concatena las versiones directas con el resultado de llamar a `versiones_de()` para cada una de esas versiones.
-
-### Traza de ejemplo para la Canción ID "1":
-* Llamada 1: `versiones_de("1")` -> tiene derivadas ["2", "3"]
-  * Llamada 2: `versiones_de("2")` -> tiene derivada ["4"]
-    * Llamada 3: `versiones_de("4")` -> caso base -> devuelve `[]`
-    * Retorna `["4"]`
-  * Llamada 4: `versiones_de("3")` -> caso base -> devuelve `[]`
-  * Retorna `["3"]`
-* Resultado final: `["2", "3", "4"]`
