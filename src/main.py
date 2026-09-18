@@ -1,5 +1,5 @@
 from src.config import TEMA
-from src.dominio.catalogo import obtener_catalogo
+from src.dominio.catalogo import obtener_catalogo, versiones_de, RELACIONES_VERSIONES
 
 TEMAS = {
     "pokedex": "Pokédex",
@@ -50,10 +50,15 @@ def main():
         if opcion == "0":
             print("Chau.")
         elif opcion == "1":
-            # para la entrega 1: ejecutamos la func que muestra el catalogo cargado a mano
             listar_catalogo()
-        elif opcion in {"2", "3", "4", "5", "6", "7", "8", "9"}:
-            # las opciones de la 2 a la 9 quedan pendientes para las sig entregas del cuatri
+        elif opcion == "5":
+            id_buscar = input("Ingrese el ID de la canción: ").strip()
+            derivadas = versiones_de(RELACIONES_VERSIONES, id_buscar)
+            if derivadas:
+                print(f"Versiones derivadas de {id_buscar}: {derivadas}")
+            else:
+                print(f"La canción {id_buscar} no tiene versiones derivadas.")
+        elif opcion in {"2", "3", "4", "6", "7", "8", "9"}:
             pendiente()
         else:
             print("Opción inválida.")
