@@ -1,13 +1,7 @@
 from src.config import TEMA
-from src.dominio.catalogo import obtener_catalogo, versiones_de, RELACIONES_VERSIONES, Cancion
-from src.tads.pila import Pila
-from src.tads.cola import Cola
-from src.excepciones import (
-    ColeccionLlenaError,
-    ItemNoEncontradoError,
-    PilaVaciaError,
-    ColaVaciaError
-)
+from src.dominio.catalogo import obtener_catalogo, versiones_de, RELACIONES_VERSIONES, Catalogo, Cancion
+from src.algoritmos.busqueda import busqueda_lineal, busqueda_binaria
+from src.algoritmos.ordenamiento import ordenar_seleccion, ordenar_insercion
 
 TEMAS = {
     "pokedex": "Pokédex",
@@ -15,20 +9,119 @@ TEMAS = {
     "musica": "Biblioteca musical",
 }
 
+# Estado global del ordenamiento para la búsqueda binaria
+_ORDENADO_POR = None  # Puede ser "titulo", "anio", "duracion_seg" o None
+
 
 def pendiente():
     print("Todavía no está implementado. Completar en la entrega que corresponde.")
 
+
+def obtener_lista_canciones(catalogo):
+    """Convierte el catálogo (ListaEnlazada) en una lista de Python para operar."""
+    return [cancion for cancion in catalogo]
+
+
+def reconstruir_catalogo(lista_canciones, limite_maximo=100):
+    """Crea un nuevo objeto Catalogo cargando las canciones en el nuevo orden."""
+    nuevo_cat = Catalogo(limite_maximo=limite_maximo)
+    for c in lista_canciones:
+        nuevo_cat.agregar_cancion(c)
+    return nuevo_cat
+
+
 def listar_catalogo(catalogo):
     print("\n--- CATÁLOGO DE CANCIONES ---")
-    if len(catalogo) == 0:
+    if not catalogo or len(catalogo) == 0:
         print("El catálogo está vacío.")
         return
 
-    # utiliza el iterador implementado en Catalogo y ListaEnlazada
     for cancion in catalogo:
         print(cancion)
     print("-" * 50)
+
+
+def menu_buscar(catalogo):
+    global _ORDENADO_POR
+    print("\n--- MENÚ DE BÚSQUEDA ---")
+    print("1) Buscar por Título (Búsqueda Lineal)")
+    print("2) Buscar por Título (Búsqueda Binaria)")
+    sub_opc = input("> ").strip()
+
+    lista_canciones = obtener_lista_canciones(catalogo)
+    if not lista_canciones:
+        print("El catálogo está vacío.")
+        return
+
+    if sub_opc == "1":
+        clave = input("Ingresá el título de la canción a buscar: ").strip()
+        resultado = busqueda_lineal(
+            lista_canciones,
+            clave.lower(),
+            obtener_clave=lambda c: c.titulo.lower()
+        )
+        if resultado:
+            print(f"\n¡Canción encontrada!\n{resultado}")
+        else:
+            print(f"\nNo se encontró ninguna canción con el título '{clave}'.")
+
+    elif sub_opc == "2":
+        # REGLA DURA: Si no está ordenado por título, reordenamos y avisamos
+        if _ORDENADO_POR != "titulo":
+            print("\n[AVISO] El catálogo no estaba ordenado por título.")
+            print("Ordenando automáticamente por Título (Selección) para poder aplicar búsqueda binaria...")
+            ordenar_seleccion(lista_canciones, obtener_clave=lambda c: c.titulo.lower())
+            _ORDENADO_POR = "titulo"
+            # Actualizamos las canciones en el objeto catalogo
+            catalogo = reconstruir_catalogo(lista_canciones, catalogo.limite_maximo)
+
+        clave = input("Ingresá el título exacto de la canción a buscar (Binaria): ").strip()
+        resultado = busqueda_binaria(
+            lista_canciones,
+            clave.lower(),
+            obtener_clave=lambda c: c.titulo.lower()
+        )
+        if resultado:
+            print(f"\n¡Canción encontrada!\n{resultado}")
+        else:
+            print(f"\nNo se encontró ninguna canción con el título '{clave}'.")
+    else:
+        print("Opción de búsqueda inválida.")
+
+
+def menu_ordenar(catalogo):
+    global _ORDENADO_POR
+    print("\n--- MENÚ DE ORDENAMIENTO ---")
+    print("1) Ordenar por Título (Selección - No Estable)")
+    print("2) Ordenar por Año (Inserción - Estable)")
+    print("3) Ordenar por Duración (Inserción - Estable)")
+    sub_opc = input("> ").strip()
+
+    lista_canciones = obtener_lista_canciones(catalogo)
+    if not lista_canciones:
+        print("El catálogo está vacío.")
+        return catalogo
+
+    if sub_opc == "1":
+        ordenar_seleccion(lista_canciones, obtener_clave=lambda c: c.titulo.lower())
+        _ORDENADO_POR = "titulo"
+        print("\nCatálogo ordenado exitosamente por Título (Selección).")
+    elif sub_opc == "2":
+        ordenar_insercion(lista_canciones, obtener_clave=lambda c: c.anio)
+        _ORDENADO_POR = "anio"
+        print("\nCatálogo ordenado exitosamente por Año (Inserción).")
+    elif sub_opc == "3":
+        ordenar_insercion(lista_canciones, obtener_clave=lambda c: c.duracion_seg)
+        _ORDENADO_POR = "duracion_seg"
+        print("\nCatálogo ordenado exitosamente por Duración (Inserción).")
+    else:
+        print("Opción de ordenamiento inválida.")
+        return catalogo
+
+    nuevo_catalogo = reconstruir_catalogo(lista_canciones, catalogo.limite_maximo)
+    listar_catalogo(nuevo_catalogo)
+    return nuevo_catalogo
+
 
 def mostrar_menu():
     nombre = TEMAS.get(TEMA, TEMA or "(sin tema)")
@@ -51,10 +144,7 @@ def main():
         print("Seteá TEMA en src/config.py: 'pokedex', 'recetario' o 'musica'.")
         return
 
-    # instanciamos los TADs para el dominio de la aplicacion
-    catalogo = obtener_catalogo()
-    historial_pila = Pila()
-    reproduccion_cola = Cola()
+    catalogo_actual = obtener_catalogo()
 
     opcion = None
     while opcion != "0":
@@ -63,7 +153,11 @@ def main():
         if opcion == "0":
             print("Chau.")
         elif opcion == "1":
-            listar_catalogo(catalogo)
+            listar_catalogo(catalogo_actual)
+        elif opcion == "3":
+            menu_buscar(catalogo_actual)
+        elif opcion == "4":
+            catalogo_actual = menu_ordenar(catalogo_actual)
         elif opcion == "5":
             id_buscar = input("Ingrese el ID de la canción: ").strip()
             derivadas = versiones_de(RELACIONES_VERSIONES, id_buscar)
@@ -71,75 +165,7 @@ def main():
                 print(f"Versiones derivadas de {id_buscar}: {derivadas}")
             else:
                 print(f"La canción {id_buscar} no tiene versiones derivadas.")
-        elif opcion == "6":
-            print("\n--- AGREGAR CANCIÓN A LA COLECCIÓN ---")
-            id_c = input("ID: ").strip()
-            titulo = input("Título: ").strip()
-            artista = input("Artista: ").strip()
-            album = input("Álbum: ").strip()
-            genero = input("Género: ").strip()
-            try:
-                anio = int(input("Año: ").strip())
-                duracion = int(input("Duración en segundos: ").strip())
-                nueva_cancion = Cancion(id_c, titulo, artista, album, genero, anio, duracion)
-                catalogo.agregar_cancion(nueva_cancion)
-                print(f"¡Canción '{titulo}' agregada con éxito al catálogo!")
-            except ValueError:
-                print("Error: El año y la duracion deben ser numeros enteros.")
-            except ColeccionLlenaError as e:
-                print(f"Error de Capacidad: {e}")
-        elif opcion == "7":
-            print("\n--- HISTORIAL DE REPRODUCCIÓN (PILA) ---")
-            print("a) Reproducir cancion (apilar)")
-            print("b) Deshacer ultima reproduccion (desapilar)")
-            print("c) Ver ultima cancion reproducida (ver tope)")
-            sub_op = input("> ").strip().lower()
-            try:
-                if sub_op == "a":
-                    id_c = input("Ingrese el ID de la cancion a reproducir: ").strip()
-                    cancion = catalogo.buscar_por_id(id_c)
-                    historial_pila.apilar(cancion)
-                    print(f"Reproduciendo: {cancion}")
-                elif sub_op == "b":
-                    cancion_sacada = historial_pila.desapilar()
-                    print(f"Deshecha la reproduccion de: {cancion_sacada}")
-                elif sub_op == "c":
-                    tope = historial_pila.ver_tope()
-                    print(f"Ultima cancion en el historial: {tope}")
-                else:
-                    print("Subopcion invalida.")
-            except ItemNoEncontradoError as e:
-                print(f"Error de Busqueda: {e}")
-            except PilaVaciaError as e:
-                print(f"Error de Historial: {e}")
-        elif opcion == "8":
-            print("\n--- COLA DE REPRODUCCIÓN (COLA) ---")
-            print("a) Encolar cancion")
-            print("b) Reproducir siguiente (desencolar)")
-            print("c) Ver siguiente en la cola (ver frente)")
-            sub_op = input("> ").strip().lower()
-            try:
-                if sub_op == "a":
-                    id_c = input("Ingrese el ID de la cancion a encolar: ").strip()
-                    cancion = catalogo.buscar_por_id(id_c)
-                    reproduccion_cola.encolar(cancion)
-                    print(f"Cancion '{cancion.titulo}' agregada a la cola.")
-                elif sub_op == "b":
-                    siguiente = reproduccion_cola.desencolar()
-                    print(f"Reproduciendo de la cola: {siguiente}")
-                    # Al reproducir, la agregamos automáticamente al historial (Pila)
-                    historial_pila.apilar(siguiente)
-                elif sub_op == "c":
-                    frente = reproduccion_cola.ver_frente()
-                    print(f"Siguiente cancion en la cola: {frente}")
-                else:
-                    print("Subopcion invalida.")
-            except ItemNoEncontradoError as e:
-                print(f"Error de Busqueda: {e}")
-            except ColaVaciaError as e:
-                print(f"Error de Cola: {e}")
-
-        elif opcion in {"2", "3", "4", "9"}:
+        elif opcion in {"2", "6", "7", "8", "9"}:
             pendiente()
         else:
             print("Opción inválida.")
