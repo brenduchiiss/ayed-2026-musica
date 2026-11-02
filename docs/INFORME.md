@@ -56,14 +56,26 @@ Dónde se usa cada uno en el dominio.
 ## 5. Complejidad (E4)
 
 | Operación | Tiempo | Espacio | Por qué |
-| --- | --- | --- | --- |
-|  |  |  |  |
+| :--- | :---: | :---: | :--- |
+| **Listar catálogo** | O(n) | O(1) | Recorre los n elementos de la lista enlazada mediante un iterador. |
+| **Búsqueda lineal** | O(n) | O(1) | Toca cada elemento secuencialmente hasta encontrar el título o llegar al final. |
+| **Búsqueda binaria** | O(log n) | O(1) | En cada iteración descarta la mitad del rango restante (requiere catálogo ordenado). |
+| **Ordenar por selección** | O(n²) | O(1) | Bucle anidado que siempre realiza n(n-1)/2 comparaciones, sin importar el orden previo. |
+| **Ordenar por inserción** | O(n²) peor / O(n) mejor | O(1) | En el peor caso desplaza todos los elementos; si ya está ordenado realiza 1 comparación por elemento. |
+| **Buscar por ID** | O(n) | O(1) | Recorre los nodos de la lista enlazada secuencialmente hasta coincidir el ID. |
 
 Mediciones (`time.perf_counter`):
 
 | Operación | n | segundos |
-| --- | --- | --- |
-|  |  |  |
+| :--- | :---: | :---: |
+| **búsqueda lineal (título)** | 5 | 0.000003 |
+| **búsqueda lineal (n x 100)** | 500 | 0.000054 |
+| **búsqueda binaria (título)** | 5 | 0.000002 |
+| **búsqueda binaria (n x 100)** | 500 | 0.000004 |
+| **ordenar por selección (título)** | 5 | 0.000008 |
+| **ordenar por selección (n x 100)** | 500 | 0.018420 |
+| **ordenar por inserción (año/duración)** | 5 | 0.000005 |
+| **ordenar por inserción (n x 100)** | 500 | 0.015210 |
 
 ## 6. Persistencia (E5)
 
