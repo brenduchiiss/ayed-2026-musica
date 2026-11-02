@@ -16,10 +16,10 @@ Mínimos: 8 casos escritos en E2; ejecutados en E3; 15 de regresión en E6 (pila
 | P06 | E3 | Desapilar historial vacío | pila vacía | excepción propia, menú sigue | pasa |  |
 | P07 | E3 | Desencolar cola vacía | cola vacía | excepción propia, menú sigue | pasa |  |
 | P08 | E3 | Listar colección con el iterador | 2+ ítems | el orden coincide con las inserciones | pasa |  |
-| P09 | Búsqueda lineal de un nombre que existe | lo encuentra y lo muestra | pasa |
-| P10 | Búsqueda lineal de un nombre que no existe | "no encontrado", sin traceback, el menú sigue | pasa |
-| P11 | Búsqueda binaria con el catálogo desordenado | avisa o reordena; no da un falso "no encontrado" | pasa |
-| P12 | Ordenar por un criterio y después por otro | el orden cambia correctamente | pasa |
+| P09 | E4 | Búsqueda lineal de un nombre que existe | Canción del catálogo | lo encuentra y lo muestra | pasa | Búsqueda por título correcta |
+| P10 | E4 | Búsqueda lineal de un nombre que no existe | Título inexistente | "no encontrado", sin traceback, el menú sigue | pasa | Manejo de excepción/búsqueda nula |
+| P11 | E4 | Búsqueda binaria con el catálogo desordenado | Canción desordenada | avisa o reordena; no da un falso "no encontrado" | pasa | Reordena automáticamente y busca |
+| P12 | E4 | Ordenar por un criterio y después por otro | Título y Año/Duración | el orden cambia correctamente | pasa | Selección e inserción funcionales |
 | P13 | E5 | Guardar CSV, salir, volver a entrar |  | los datos siguen |  |  |
 | P14 | E5 | Guardar binario y modificar un registro por id |  | al recargar, ese campo cambió |  |  |
 | P15 | E5 | Abrir un binario truncado o con magia mala | archivo basura | excepción de archivo inválido |  |  |
