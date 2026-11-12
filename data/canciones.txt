@@ -1,0 +1,6 @@
+id,titulo,artista,album,genero,anio,duracion_seg
+1,De Musica Ligera,Soda Stereo,Cancion Animal,Rock,1990,213
+2,Persiana Americana,Soda Stereo,Signos,Rock,1986,263
+3,En la Ciudad de la Furia,Soda Stereo,Doble Vida,Rock,1988,351
+4,Crimen,Gustavo Cerati,Ahí vamos,Rock,2006,239
+5,Adios,Gustavo Cerati,Fuerza Natural,Rock,2009,233

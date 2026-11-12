@@ -1,5 +1,6 @@
 from src.tads.lista_enlazada import ListaEnlazada
 from src.excepciones import ColeccionLlenaError, ItemNoEncontradoError
+from src.persistencia.texto import cargar_csv
 
 class Cancion:
     """clase que representa una cancion individual dentro del catalogo."""
@@ -44,6 +45,19 @@ class Catalogo:
                 return cancion
         raise ItemNoEncontradoError(f"No se encontro la cancion con ID {id_cancion}")
 
+    def eliminar_cancion(self, id_cancion: str):
+        """Elimina una cancion por su ID reconstructiendo la lista enlazada."""
+        encontrada = False
+        nueva_lista = ListaEnlazada()
+        for cancion in self._canciones:
+            if str(cancion.id) == str(id_cancion) and not encontrada:
+                encontrada = True
+            else:
+                nueva_lista.insertar_al_final(cancion)
+        if not encontrada:
+            raise ItemNoEncontradoError(f"No se encontró la canción con ID {id_cancion}")
+        self._canciones = nueva_lista
+    
     def __iter__(self):
         """permite iterar sobre las canciones del catalogo usando el iterador de ListaEnlazada."""
         return iter(self._canciones)
@@ -86,3 +100,40 @@ def versiones_de(relaciones, id_cancion):
     for v in directas:
         resultado += versiones_de(relaciones, v)
     return resultado
+
+
+# --- funciones de persistencia en texto (E5) ---
+ENCABEZADOS = ["id", "titulo", "artista", "album", "genero", "anio", "duracion_seg"]
+
+def armar_catalogo_desde_txt(ruta):
+    """Lee el .txt y devuelve un catalogo con objetos cancion."""
+    filas = cargar_csv(ruta)
+    cat = Catalogo(limite_maximo=100)
+    for fila in filas:
+        cancion = Cancion(
+            id_cancion=str(fila["id"]),
+            titulo=fila["titulo"],
+            artista=fila["artista"],
+            album=fila["album"],
+            genero=fila["genero"],
+            anio=int(fila["anio"]),
+            duracion_seg=int(fila["duracion_seg"]),
+        )
+        cat.agregar_cancion(cancion)
+    return cat
+
+
+def filas_del_catalogo(catalogo):
+    """Convierte las canciones del catalogo en dicts para guardar en .txt."""
+    filas = []
+    for c in catalogo:
+        filas.append({
+            "id": c.id,
+            "titulo": c.titulo,
+            "artista": c.artista,
+            "album": c.album,
+            "genero": c.genero,
+            "anio": c.anio,
+            "duracion_seg": c.duracion_seg,
+        })
+    return filas

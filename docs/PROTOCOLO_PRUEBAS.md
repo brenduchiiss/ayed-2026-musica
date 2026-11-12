@@ -20,6 +20,6 @@ Mínimos: 8 casos escritos en E2; ejecutados en E3; 15 de regresión en E6 (pila
 | P10 | E4 | Búsqueda lineal de un nombre que no existe | Título inexistente | "no encontrado", sin traceback, el menú sigue | pasa | Manejo de excepción/búsqueda nula |
 | P11 | E4 | Búsqueda binaria con el catálogo desordenado | Canción desordenada | avisa o reordena; no da un falso "no encontrado" | pasa | Reordena automáticamente y busca |
 | P12 | E4 | Ordenar por un criterio y después por otro | Título y Año/Duración | el orden cambia correctamente | pasa | Selección e inserción funcionales |
-| P13 | E5 | Guardar CSV, salir, volver a entrar |  | los datos siguen |  |  |
-| P14 | E5 | Guardar binario y modificar un registro por id |  | al recargar, ese campo cambió |  |  |
-| P15 | E5 | Abrir un binario truncado o con magia mala | archivo basura | excepción de archivo inválido |  |  |
+| P13 | E5 | Guardar CSV, salir, volver a entrar |  | los datos siguen | pasa |  |
+| P14 | E5 | Guardar binario y modificar un registro por id |  | al recargar, ese campo cambió | pasa |  |
+| P15 | E5 | Abrir un binario truncado o con magia mala | archivo basura | excepción de archivo inválido | pasa |  |

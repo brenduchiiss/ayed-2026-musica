@@ -1,7 +1,16 @@
 from src.config import TEMA
-from src.dominio.catalogo import obtener_catalogo, versiones_de, RELACIONES_VERSIONES, Catalogo, Cancion
+from src.excepciones import ArchivoInvalidoError, ItemNoEncontradoError, ColeccionLlenaError
+from src.dominio.catalogo import (
+    obtener_catalogo, versiones_de, RELACIONES_VERSIONES,
+    Catalogo, Cancion, ENCABEZADOS, armar_catalogo_desde_txt, filas_del_catalogo
+)
 from src.algoritmos.busqueda import busqueda_lineal, busqueda_binaria
 from src.algoritmos.ordenamiento import ordenar_seleccion, ordenar_insercion
+from src.persistencia.texto import RUTA_TXT, guardar_csv
+from src.persistencia.binario import (
+    RUTA_BIN, guardar_binario, cargar_binario,
+    actualizar_registro, posicion_del_id, alta_binario, baja_binario
+)
 
 TEMAS = {
     "pokedex": "Pokédex",
@@ -28,6 +37,12 @@ def reconstruir_catalogo(lista_canciones, limite_maximo=100):
     for c in lista_canciones:
         nuevo_cat.agregar_cancion(c)
     return nuevo_cat
+
+
+def guardar_todo(catalogo):
+    """Guarda el catálogo en los dos formatos. Memoria y archivos quedan iguales."""
+    guardar_csv(RUTA_TXT, filas_del_catalogo(catalogo), ENCABEZADOS)
+    guardar_binario(RUTA_BIN, catalogo)
 
 
 def listar_catalogo(catalogo):
@@ -119,8 +134,97 @@ def menu_ordenar(catalogo):
         return catalogo
 
     nuevo_catalogo = reconstruir_catalogo(lista_canciones, catalogo.limite_maximo)
+    guardar_todo(nuevo_catalogo)
     listar_catalogo(nuevo_catalogo)
     return nuevo_catalogo
+
+
+def menu_archivos(catalogo):
+    global _ORDENADO_POR
+    print("\n--- GUARDAR / CARGAR Y ABM PERSISTENTE ---")
+    print(" a) Cargar catálogo desde .txt")
+    print(" b) Guardar catálogo en .txt")
+    print(" c) Guardar catálogo en binario (.bin)")
+    print(" d) Cargar catálogo desde binario (.bin)")
+    print(" e) Alta de canción (persiste en .txt y .bin)")
+    print(" f) Baja de canción por ID (persiste en .txt y .bin)")
+    print(" g) Modificar canción por ID (acceso directo seek en .bin + .txt)")
+    sub = input(" Subopción > ").strip().lower()
+
+    try:
+        if sub == "a":
+            nombre = input("Archivo en data/ (Enter para canciones.txt): ").strip()
+            ruta = (RUTA_TXT.parent / nombre) if nombre else RUTA_TXT
+            catalogo = armar_catalogo_desde_txt(ruta)
+            _ORDENADO_POR = None
+            guardar_todo(catalogo)  # <--- ACÁ
+            print(f"Catálogo cargado desde {ruta.name}: {len(catalogo)} ítems.")
+        elif sub == "b":
+            guardar_csv(RUTA_TXT, filas_del_catalogo(catalogo), ENCABEZADOS)
+            print("Catálogo guardado en .txt.")
+        elif sub == "c":
+            guardar_binario(RUTA_BIN, catalogo)
+            print("Catálogo guardado en .bin.")
+        elif sub == "d":
+            nombre = input("Archivo en data/ (Enter para canciones.bin): ").strip()
+            ruta = (RUTA_BIN.parent / nombre) if nombre else RUTA_BIN
+            catalogo = cargar_binario(ruta)
+            _ORDENADO_POR = None
+            guardar_todo(catalogo)  # <--- ACÁ
+            print(f"Catálogo cargado desde {ruta.name}: {len(catalogo)} ítems.")
+        elif sub == "e":
+            id_c = input("ID: ").strip()
+            titulo = input("Título: ").strip()
+            artista = input("Artista: ").strip()
+            album = input("Álbum: ").strip()
+            genero = input("Género: ").strip()
+            anio = int(input("Año: ").strip())
+            dur = int(input("Duración (seg): ").strip())
+            nueva = Cancion(id_c, titulo, artista, album, genero, anio, dur)
+            catalogo.agregar_cancion(nueva)
+            _ORDENADO_POR = None
+            guardar_csv(RUTA_TXT, filas_del_catalogo(catalogo), ENCABEZADOS)
+            if RUTA_BIN.exists():
+                alta_binario(RUTA_BIN, nueva)
+            else:
+                guardar_binario(RUTA_BIN, catalogo)
+            print("Canción agregada y guardada en archivos.")
+        elif sub == "f":
+            id_baja = input("ID de la canción a dar de baja: ").strip()
+            pos = posicion_del_id(catalogo, id_baja)
+            catalogo.eliminar_cancion(id_baja)
+            _ORDENADO_POR = None
+            guardar_csv(RUTA_TXT, filas_del_catalogo(catalogo), ENCABEZADOS)
+            if RUTA_BIN.exists():
+                baja_binario(RUTA_BIN, pos)
+            print("Canción eliminada y cambios persistidos.")
+        elif sub == "g":
+            id_mod = input("ID de la canción a modificar: ").strip()
+            pos = posicion_del_id(catalogo, id_mod)
+            cancion_actual = catalogo.buscar_por_id(id_mod)
+            print(f"Editando: {cancion_actual}")
+            cancion_actual.titulo = input("Nuevo título (Enter para mantener): ").strip() or cancion_actual.titulo
+            cancion_actual.artista = input("Nuevo artista (Enter para mantener): ").strip() or cancion_actual.artista
+            cancion_actual.album = input("Nuevo álbum (Enter para mantener): ").strip() or cancion_actual.album
+            cancion_actual.genero = input("Nuevo género (Enter para mantener): ").strip() or cancion_actual.genero
+            anio_in = input("Nuevo año (Enter para mantener): ").strip()
+            if anio_in:
+                cancion_actual.anio = int(anio_in)
+            dur_in = input("Nueva duración en seg (Enter para mantener): ").strip()
+            if dur_in:
+                cancion_actual.duracion_seg = int(dur_in)
+            _ORDENADO_POR = None
+            if not RUTA_BIN.exists():
+                guardar_binario(RUTA_BIN, catalogo)
+            actualizar_registro(RUTA_BIN, pos, cancion_actual)
+            guardar_csv(RUTA_TXT, filas_del_catalogo(catalogo), ENCABEZADOS)
+            print("Registro actualizado en .bin (acceso directo) y .txt.")
+        else:
+            print("Subopción inválida.")
+    except (ArchivoInvalidoError, ItemNoEncontradoError, ColeccionLlenaError, ValueError) as error:
+        print(f"Error: {error}")
+
+    return catalogo
 
 
 def mostrar_menu():
@@ -144,7 +248,10 @@ def main():
         print("Seteá TEMA en src/config.py: 'pokedex', 'recetario' o 'musica'.")
         return
 
-    catalogo_actual = obtener_catalogo()
+    try:
+        catalogo_actual = armar_catalogo_desde_txt(RUTA_TXT)
+    except ArchivoInvalidoError:
+        catalogo_actual = obtener_catalogo()
 
     opcion = None
     while opcion != "0":
@@ -165,8 +272,10 @@ def main():
                 print(f"Versiones derivadas de {id_buscar}: {derivadas}")
             else:
                 print(f"La canción {id_buscar} no tiene versiones derivadas.")
-        elif opcion in {"2", "6", "7", "8", "9"}:
+        elif opcion in {"2", "6", "7", "8"}:
             pendiente()
+        elif opcion == "9":
+            catalogo_actual = menu_archivos(catalogo_actual)    
         else:
             print("Opción inválida.")
 
