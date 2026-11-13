@@ -47,11 +47,16 @@ Estructura del modelo:
 
 | TAD | Operaciones | Invariante |
 | --- | --- | --- |
-| ListaEnlazada |  |  |
-| Pila |  |  |
-| Cola |  |  |
+| ListaEnlazada | insertar al inicio, insertar al final, insertar ordenado, eliminar, buscar, iterar | El tamaño registrado coincide con la cantidad de nodos y la lista termina en None.|
+| Pila |	apilar, desapilar, ver tope, esta vacía  | El último elemento agregado es el primero que se retira (LIFO). |
+| Cola | encolar, desencolar, ver frente, esta vacía | El primer elemento agregado es el primero que se retira (FIFO). |
 
-Dónde se usa cada uno en el dominio.
+### Uso en el dominio
+- ListaEnlazada: almacena las canciones de la playlist.
+- Pila: conserva el historial de canciones consultadas.
+- Cola: organiza las canciones pendientes de reproducción.
+
+La pila y la cola utilizan internamente la lista enlazada.
 
 ## 5. Complejidad (E4)
 
@@ -78,8 +83,9 @@ Mediciones (`time.perf_counter`):
 | **ordenar por inserción (n x 100)** | 500 | 0.015210 |
 
 ## 6. Persistencia (E5)
-- Layout del registro binario: `struct.Struct("<8s 30s 25s 20s 14s I I")` = 105 bytes.
-id (8s, 8 B), titulo (30s, 30 B), artista (25s, 25 B), album (20s, 20 B), genero (14s, 14 B), anio (I, 4 B) y duracion_seg (I, 4 B). Cadenas UTF-8 recortadas/rellenadas con \x00 al ancho fijo.
+
+- Layout del registro binario: `struct.Struct("<I 30s 25s 30s 12s 2H")` = 105 bytes.
+id (I, 4 B), titulo (30s, 30 B), artista (25s, 25 B), album (30s, 30 B), genero (12s, 12 B), anio (H, 2 B) y duracion_seg (H, 2 B). Cadenas UTF-8 recortadas/rellenadas con `\x00` al ancho fijo.
 - Header: `struct.Struct("<4s 1s I")` = 9 bytes: magia `AYED`, tema `M`, cantidad de registros.
 - Actualización por posición: `seek(HEADER.size + posicion * FORMATO.size)` y se pisa ese único registro (acceso directo, O(1)). El alta hace append al final y arregla la cantidad del header. La baja reescribe el archivo sin ese registro.
 
@@ -87,4 +93,9 @@ id (8s, 8 B), titulo (30s, 30 B), artista (25s, 25 B), album (20s, 20 B), genero
 
 | Integrante | Qué hizo | Qué puede defender |
 | --- | --- | --- |
-|  |  |  |
+| Brenda | Entregas 1, 3 y 4 | Los contenidos y la implementación correspondientes a esas entregas. |
+| Valentina | Entregas 2, 4 y 5 | Los contenidos y la implementación correspondientes a esas entregas. |
+| Abril | Entrega 6. En el grupo anterior participó en las entregas 1, 2 y 3. | Las funcionalidades y documentación de la entrega 6, y su trabajo previo en las entregas 1, 2 y 3. |
+8. Declaración de uso de inteligencia artificial
+
+Se utilizó la IA como herramienta de apoyo durante el desarrollo del trabajo, principalmente para consultar dudas, revisar y corregir errores, mejorar la redacción de la documentación y comprender algunos aspectos de la implementación.

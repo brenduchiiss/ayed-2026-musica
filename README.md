@@ -1,30 +1,26 @@
-<<<<<<< HEAD
-# AyED C2 2026 — TP integrador
 
-Sitio para leer la consigna (GitHub Pages) y esqueleto para clonar.
-
-- **Consigna en el navegador:** https://algoritmos-unab.github.io/ayed-c2-2026-tp/
-- **Repositorio:** https://github.com/algoritmos-UNaB/ayed-c2-2026-tp
-- **Esqueleto:** [`tp-integrador/esqueleto`](tp-integrador/esqueleto)
-- Regenerar el sitio: `py -3 tools/build_site.py` (hace falta el paquete `markdown`)
-=======
 # TP integrador — AyED C2 2026
 
 Repositorio del grupo. Partir de este esqueleto. No borrar la estructura de `src/` ni de `docs/`.
+
+- **Consigna en el navegador:** https://algoritmos-unab.github.io/ayed-c2-2026-tp/
+- **Repositorio:** https://github.com/algoritmos-UNaB/ayed-c2-2026-tp
+- **Esqueleto:** `tp-integrador/esqueleto`
+- Regenerar el sitio: `py -3 tools/build_site.py` (hace falta el paquete `markdown`).
 
 ## Integrantes
 
 | Nombre | Mail | GitHub |
 | :--- | :--- | :--- |
 | Brenda Correa | brendamcorrea.25@gmail.com | brenduchiiss |
-|Abril Gomez | abrilagostinagomez34@gmail.com | abrilagostinagomez3456 |
-| Valentina Skrobacki | valentinaskrobacki@gmail.com | valentinaskrobacki |
+| Abril Gomez | abrilagostinagomez34@gmail.com | abrilagostinagomez3456 |
+| Valentina Skrobacki | valentinaskrobacki | valentinaskrobacki |
 
-**Tema elegido:** Biblioteca musical
+**Tema elegido:** Biblioteca musical.
 
 ## Cómo ejecutar
 
-Desde la raíz del repo, con Python 3.10 o superior:
+Desde la raíz del repositorio, con Python 3.10 o superior:
 
 ```text
 python -m src.main
@@ -32,7 +28,27 @@ python -m src.main
 
 En Windows, si `python` no anda: `py -3 -m src.main`.
 
-Solo biblioteca estándar. No hay `requirements.txt` a propósito.
+El proyecto utiliza únicamente la biblioteca estándar de Python. No requiere `requirements.txt`.
+
+## Funcionalidades
+
+- Listar el catálogo musical.
+- Consultar detalles de canciones.
+- Buscar canciones mediante búsqueda lineal y binaria.
+- Ordenar canciones por distintos criterios.
+- Consultar versiones relacionadas mediante recursividad.
+- Administrar colecciones de canciones.
+- Gestionar el historial mediante una pila.
+- Gestionar canciones pendientes mediante una cola.
+- Guardar y cargar información en archivos TXT y binarios.
+
+## Persistencia
+
+El programa permite guardar y cargar el catálogo en archivos de texto y binarios. Los archivos binarios utilizan registros de longitud fija y permiten actualizar registros por posición.
+
+## Limitaciones
+
+El programa funciona mediante una interfaz de consola. No cuenta con interfaz gráfica. Los archivos binarios de prueba se generan desde el propio programa.
 
 ## Entregas
 
@@ -53,4 +69,3 @@ Defensa oral (reemplaza el 2do parcial): 25 y 27-nov-2026.
 La cátedra corrige el **tag**, no el último commit suelto de `main`.
 
 El grupo se avisa por mail a diego.ambrossio@unab.edu.ar **y** angel.bianco@unab.edu.ar. Ver `GIT.md`.
->>>>>>> a7d190326d6e4d96db35e2cd86adbf95cacc0da1
